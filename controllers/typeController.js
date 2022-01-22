@@ -1,11 +1,22 @@
-const {Type} = require('../models/models')
+const {Type, Product} = require('../models/models')
 const ApiError = require('../error/ApiError')
+const uuid = require("uuid");
+const path = require("path");
 
 class TypeController {
     async create(req, res) {
         const {name} = req.body
         const type = await Type.create({name})
         return res.json(type)
+    }
+
+    async delete (req, res, next) {
+        try {
+            await Type.destroy({where: {id: req.params.id}})
+            res.status(200).json('Тип удалён')
+        } catch (e) {
+            next(ApiError.internal(e))
+        }
     }
 
     async getAll(req, res) {
