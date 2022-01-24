@@ -1,8 +1,9 @@
 const uuid = require('uuid')
 const path = require('path')
-const {Product, ProductInfo} = require('../models/models')
+const {Tv, TvInfo} = require('../models/models')
 const ApiError = require('../error/ApiError')
 const multer = require("multer");
+const {DataTypes} = require("sequelize");
 
     // const create = async (req, res, next) {
     //
@@ -41,70 +42,75 @@ const multer = require("multer");
     //     }
     // }
 
-const createProduct = async (req, res, next) => {
+const addTv = async (req, res, next) => {
     try {
+        let {name, price, oldPrice, rating, info} = req.body
         const paths = req.files.map((file) => ({fileName: file.filename}))
-        let {name, info} = req.body
-        const product = await Product.create({
+        const tv = await Tv.create({
             name,
-            img: JSON.stringify(paths)
+            price,
+            oldPrice,
+            rating,
+            img: JSON.stringify(paths),
+
         })
+        console.log(tv)
         if (info) {
             info = JSON.parse(info)
             info.forEach(i =>
-                ProductInfo.create({
+                TvInfo.create({
                     title: i.title,
                     description: i.description,
-                    deviceId: product.id
+                    tvId: tv.id
                 })
             )
         }
         console.log(paths)
-        res.status(200).send(product)
+        res.status(200).send(tv)
     } catch (e) {
         next(ApiError.badRequest(e.message))
     }
 }
 
-const deleteProduct = async (req, res, next) => {
+const deleteTv = async (req, res, next) => {
     try {
-        await Product.destroy({where: {id: req.params.id}})
+        await Tv.destroy({where: {id: req.params.id}})
         res.status(200).json('Продукт удалён')
     } catch (e) {
         next(ApiError.internal(e))
     }
 }
 
-const getAllProducts = async (req, res) => {
+const getAllTv = async (req, res) => {
     let {brandId, typeId, limit, page} = req.query
     page = page || 1
     limit = limit || 9
     let offset = page * limit - limit
     let product
     if (!brandId && !typeId) {
-        product = await Product.findAndCountAll({limit, offset})
+        product = await Tv.findAndCountAll({limit, offset,  include: [{model: TvInfo, as: 'info'}]})
     }
     if (brandId && !typeId) {
-        product = await Product.findAndCountAll({where: {brandId}, limit, offset})
+        product = await Tv.findAndCountAll({where: {brandId}, limit, offset,  include: [{model: TvInfo, as: 'info'}]})
     }
     if (!brandId && typeId) {
-        product = Product.findAndCountAll({where: {typeId}, limit, offset})
+        product = Tv.findAndCountAll({where: {typeId}, limit, offset,  include: [{model: TvInfo, as: 'info'}]})
     }
     if (brandId && typeId) {
-        product = Product.findAndCountAll({where: {brandId, typeId}, limit, offset})
+        product = Tv.findAndCountAll({where: {brandId, typeId}, limit, offset,  include: [{model: TvInfo, as: 'info'}]})
     }
     return res.json(product.rows)
 }
 
-const getOneProduct = async (req, res) => {
+const getOneTv = async (req, res) => {
     const {id} = req.params
-    const product = await Product.findOne(
+    const tv = await Tv.findOne(
         {
             where: {id},
-            include: [{model: ProductInfo, as: 'info'}]
+            include: [{model: TvInfo, as: 'info'}]
         }
     )
-    return res.json(product)
+    return res.json(tv)
 }
 
 const storage = multer.diskStorage({
@@ -134,9 +140,9 @@ const upload = multer({
 
 
 module.exports = {
-    createProduct,
-    deleteProduct,
-    getAllProducts,
-    getOneProduct,
+    addTv,
+    deleteTv,
+    getAllTv,
+    getOneTv,
     upload
 }

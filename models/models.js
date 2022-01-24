@@ -17,32 +17,13 @@ const BasketProduct = sequelize.define('basket_item',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
 })
 
-const Product = sequelize.define('product',{
+const Tv = sequelize.define('tv',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    name: {type: DataTypes.STRING, unique: true},
-    // price: {type: DataTypes.INTEGER},
-    // system: {type: DataTypes.STRING},
-    //     manufacturer: {type: DataTypes.STRING},
-    //     processorType: {type: DataTypes.STRING},
-    //     processorFrequency: {type: DataTypes.STRING},
-    //     numberOfCores: {type: DataTypes.STRING},
-    //     memoryStorage: {type: DataTypes.STRING},
-    //     memoryRam: {type: DataTypes.STRING},
-    //     typeOfScreen: {type: DataTypes.STRING},
-    //     screenResolution: {type: DataTypes.STRING},
-    //     screenDiagonal: {type: DataTypes.STRING},
-    //     pcCommunicationCable: {type: DataTypes.STRING},
-    //     charger: {type: DataTypes.STRING},
-    //     protectiveFilm: {type: DataTypes.STRING},
-    // camera: {type: DataTypes.STRING},
-    // weight: {type: DataTypes.INTEGER},
-    // batteryCapacity: {type: DataTypes.STRING},
-    // color: {type: DataTypes.STRING},
-    // category: {type: DataTypes.STRING},
-    // rating: {type: DataTypes.INTEGER, defaultValue: 0},
+    name: {type: DataTypes.STRING, unique: true, allowNull: false},
     img: {type: DataTypes.STRING},
-    // typeImg: {type: DataTypes.STRING},
-    // nameImg: {type: DataTypes.STRING},
+    rating: {type: DataTypes.INTEGER, defaultValue: 0},
+    price: {type: DataTypes.INTEGER, allowNull: false},
+    oldPrice: {type: DataTypes.INTEGER},
 })
 
 const Type = sequelize.define('type',{
@@ -62,9 +43,9 @@ const Rating = sequelize.define('rating',{
     rate: {type: DataTypes.INTEGER, allowNull: false},
 })
 
-const ProductInfo = sequelize.define('product_info',{
+const TvInfo = sequelize.define('tv_info',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
-    title: {type: DataTypes.STRING, allowNull: false},
+    title: {type: DataTypes.STRING},
     description: {type: DataTypes.STRING}
 })
 
@@ -89,17 +70,17 @@ Rating.belongsTo(User)
 Basket.hasMany(BasketProduct)
 BasketProduct.belongsTo(Basket)
 
-Type.hasMany(Product)
-Product.belongsTo(Type)
+Type.hasMany(Tv)
+Tv.belongsTo(Type)
 
-Brand.hasMany(Product)
-Product.belongsTo(Brand)
+Brand.hasMany(Tv)
+Tv.belongsTo(Brand)
 
-Product.hasMany(BasketProduct)
-BasketProduct.belongsTo(Product)
+Tv.hasMany(BasketProduct)
+BasketProduct.belongsTo(Tv)
 
-Product.hasMany(ProductInfo, {as: 'info'})
-ProductInfo.belongsTo(Product)
+Tv.hasMany(TvInfo, {as: 'info'})
+TvInfo.belongsTo(Tv)
 
 Type.belongsToMany(Brand, {through: TypeBrand})
 Brand.belongsToMany(Type, {through: TypeBrand})
@@ -108,11 +89,11 @@ module.exports = {
     User,
     Basket,
     BasketProduct,
-    Product,
+    Tv,
     Type,
     Brand,
     Rating,
     TypeBrand,
-    ProductInfo,
+    TvInfo,
     Menu
 }
