@@ -1,7 +1,5 @@
 const {Type, Product} = require('../models/models')
 const ApiError = require('../error/ApiError')
-const uuid = require("uuid");
-const path = require("path");
 
 class TypeController {
     async create(req, res) {

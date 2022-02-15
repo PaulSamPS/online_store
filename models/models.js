@@ -17,7 +17,7 @@ const BasketProduct = sequelize.define('basket_item',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true}
 })
 
-const Tv = sequelize.define('tv',{
+const Product = sequelize.define('product',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     name: {type: DataTypes.STRING, unique: true, allowNull: false},
     img: {type: DataTypes.STRING(1000)},
@@ -43,7 +43,7 @@ const Rating = sequelize.define('rating',{
     rate: {type: DataTypes.INTEGER, allowNull: false},
 })
 
-const TvInfo = sequelize.define('tv_info',{
+const ProductInfo = sequelize.define('product_info',{
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     title: {type: DataTypes.STRING},
     description: {type: DataTypes.STRING}
@@ -70,17 +70,17 @@ Rating.belongsTo(User)
 Basket.hasMany(BasketProduct)
 BasketProduct.belongsTo(Basket)
 
-Type.hasMany(Tv)
-Tv.belongsTo(Type)
+Type.hasMany(Product)
+Product.belongsTo(Type)
 
-Brand.hasMany(Tv)
-Tv.belongsTo(Brand)
+Brand.hasMany(Product)
+Product.belongsTo(Brand)
 
-Tv.hasMany(BasketProduct)
-BasketProduct.belongsTo(Tv)
+Product.hasMany(BasketProduct)
+BasketProduct.belongsTo(Product)
 
-Tv.hasMany(TvInfo, {as: 'info'})
-TvInfo.belongsTo(Tv)
+Product.hasMany(ProductInfo, {as: 'info'})
+ProductInfo.belongsTo(Product)
 
 Type.belongsToMany(Brand, {through: TypeBrand})
 Brand.belongsToMany(Type, {through: TypeBrand})
@@ -89,11 +89,11 @@ module.exports = {
     User,
     Basket,
     BasketProduct,
-    Tv,
+    ProductInfo,
+    Product,
     Type,
     Brand,
     Rating,
     TypeBrand,
-    TvInfo,
     Menu
 }
