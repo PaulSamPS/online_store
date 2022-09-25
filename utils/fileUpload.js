@@ -7,9 +7,9 @@ exports.upload = (folderName) => {
     return multer({
         storage: multer.diskStorage({
             destination: (req, file, cb) => {
-                const path = `static/${folderName}`
+                const path = `static/${folderName}${req.body.name && `/${req.body.name}`}`
                 fs.mkdirSync(path, { recursive: true })
-                cb(null, `static/${folderName}`)
+                cb(null, `static/${folderName}${req.body.name && `/${req.body.name}`}`)
             },
             filename: (req, file, cb) => {
                 cb(null, uuid.v4() + path.extname(file.originalname))
@@ -17,7 +17,7 @@ exports.upload = (folderName) => {
         }),
         limits: { fileSize: '10000000' },
         fileFilter: (req, file, cb) => {
-            const fileTypes = /jpeg|jpg|png|gif|svg/
+            const fileTypes = /jpeg|jpg|png|gif|svg|webp/
             const mimeType = fileTypes.test(file.mimetype)
             const extname = fileTypes.test(path.extname(file.originalname))
 

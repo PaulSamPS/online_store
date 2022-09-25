@@ -4,7 +4,7 @@ const ApiError = require('../error/ApiError')
 
 const createMenu = async (req, res, next) => {
     try {
-        const {name,link} = req.body
+        const {name, link} = req.body
         const img = req.file.filename
 
         const menu = await Menu.create({
@@ -12,7 +12,6 @@ const createMenu = async (req, res, next) => {
             link,
             img
         })
-        console.log(img)
         return res.json(menu)
     } catch (e) {
         next(ApiError.internal(e))

@@ -10,7 +10,7 @@ const addProduct = async (req, res, next) => {
             price,
             oldPrice,
             rating,
-            img: JSON.stringify(paths)
+            img: paths
 
         })
         if (info) {
@@ -23,7 +23,6 @@ const addProduct = async (req, res, next) => {
                 })
             )
         }
-        console.log(paths)
         res.status(200).send(product)
     } catch (e) {
         next(ApiError.badRequest(e.message))
@@ -40,7 +39,7 @@ const deleteProduct = async (req, res, next) => {
 }
 
 const getAllProducts = async (req, res) => {
-    const product = Product.find()
+    const product = await Product.find()
     return res.json(product)
 }
 
