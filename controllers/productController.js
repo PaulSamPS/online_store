@@ -1,5 +1,5 @@
-const {Product, ProductInfo} = require('../models/models')
 const ApiError = require('../error/ApiError')
+const Product = require('../models/product.model')
 
 const addProduct = async (req, res, next) => {
     try {
@@ -32,7 +32,7 @@ const addProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
     try {
-        await Product.destroy({where: {id: req.params.id}})
+        await Product.findByIdAndDelete(req.params.id)
         res.status(200).json('Продукт удалён')
     } catch (e) {
         next(ApiError.internal(e))
@@ -40,24 +40,8 @@ const deleteProduct = async (req, res, next) => {
 }
 
 const getAllProducts = async (req, res) => {
-    let {brandId, typeId, limit, page} = req.query
-    page = page || 1
-    limit = limit || 20
-    let offset = page * limit - limit
-    let product
-    if (!brandId && !typeId) {
-        product = await Product.findAndCountAll({limit, offset,  include: [{model: ProductInfo, as: 'info'}]})
-    }
-    if (brandId && !typeId) {
-        product = await Product.findAndCountAll({where: {brandId}, limit, offset,  include: [{model: ProductInfo, as: 'info'}]})
-    }
-    if (!brandId && typeId) {
-        product = Product.findAndCountAll({where: {typeId}, limit, offset,  include: [{model: ProductInfo, as: 'info'}]})
-    }
-    if (brandId && typeId) {
-        product = Product.findAndCountAll({where: {brandId, typeId}, limit, offset,  include: [{model: ProductInfo, as: 'info'}]})
-    }
-    return res.json(product.rows)
+    const product = Product.find()
+    return res.json(product)
 }
 
 const getOneProduct = async (req, res) => {

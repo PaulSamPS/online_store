@@ -2,8 +2,9 @@ const Router = require('express')
 const router = new Router()
 const brandController = require('../controllers/brandController')
 const checkRole = require('../middleware/checkRoleMiddleware')
+const fileUpload = require('../utils/fileUpload')
 
-router.post('/', checkRole('ADMIN'), brandController.create)
+router.post('/', checkRole('ADMIN'), fileUpload.upload('brand').single('img'), brandController.create)
 router.get('/', brandController.getAll)
 
 module.exports = router

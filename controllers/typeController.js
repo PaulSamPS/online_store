@@ -1,4 +1,4 @@
-const {Type, Product} = require('../models/models')
+const Type = require('../models/type.model')
 const ApiError = require('../error/ApiError')
 
 class TypeController {
@@ -10,7 +10,7 @@ class TypeController {
 
     async delete (req, res, next) {
         try {
-            await Type.destroy({where: {id: req.params.id}})
+            await Type.findByIdAndDelete(req.params.id)
             res.status(200).json('Тип удалён')
         } catch (e) {
             next(ApiError.internal(e))
@@ -18,7 +18,7 @@ class TypeController {
     }
 
     async getAll(req, res) {
-        const types = await Type.findAll()
+        const types = await Type.find()
         return res.json(types)
     }
 

@@ -1,4 +1,4 @@
-const {Brand, Type} = require('../models/models')
+const Brand = require('../models/brand.model')
 const ApiError = require('../error/ApiError')
 const path = require("path");
 const uuid = require('uuid')
@@ -6,15 +6,14 @@ const uuid = require('uuid')
 class BrandController {
     async create(req, res) {
         const {name} = req.body
-        const {img} = req.files
+        const img = req.file.filename
         let fileName = uuid.v4() + '.png'
-        await img.mv(path.resolve(__dirname, '..', 'static/brands', fileName))
-        const brand = await Brand.create({name, img: fileName})
+        const brand = await Brand.create({name, img})
         return res.json(brand)
     }
 
     async getAll(req, res) {
-        const brands = await Brand.findAll()
+        const brands = await Brand.find()
         return res.json(brands)
     }
 

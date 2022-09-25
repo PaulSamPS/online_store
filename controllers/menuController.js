@@ -1,4 +1,4 @@
-const {Menu} = require('../models/models')
+const Menu = require('../models/menu.model')
 const ApiError = require('../error/ApiError')
 
 
@@ -10,7 +10,7 @@ const createMenu = async (req, res, next) => {
         const menu = await Menu.create({
             name,
             link,
-            img: JSON.stringify(img)
+            img
         })
         console.log(img)
         return res.json(menu)
@@ -21,7 +21,7 @@ const createMenu = async (req, res, next) => {
 
 const deleteMenu = async (req, res, next) => {
     try {
-        await Menu.destroy({where: {id: req.params.id}})
+        await Menu.findByIdAndDelete(req.params.id)
         res.status(200).json('Объект меню удалён')
     } catch (e) {
         next(ApiError.internal(e))
@@ -30,7 +30,7 @@ const deleteMenu = async (req, res, next) => {
 
 const getMenu = async (req, res, next) => {
     try {
-        const menu = await Menu.findAll()
+        const menu = await Menu.find ()
         return res.json(menu)
     } catch (e) {
         next(ApiError.internal(e))
