@@ -2,14 +2,13 @@ const ApiError = require('../error/ApiError')
 const Product = require('../models/product.model')
 const ProductFeatures = require('../models/productFeatures.model')
 
-let productFeatures
-
 const addProduct = async (req, res, next) => {
   try {
     let { name, price, oldPrice, rating, features, inStock } = req.body
     const paths = req.files.map((file) => ({ fileName: file.filename }))
+    const featuresItem = JSON.parse(features)
 
-    console.log(features)
+    console.log(JSON.parse(features))
 
     const product = await Product.create({
       name,
@@ -17,8 +16,8 @@ const addProduct = async (req, res, next) => {
       oldPrice,
       rating,
       img: paths,
-      inStock,
-      features: productFeatures,
+      inStock: 10,
+      features: featuresItem,
     })
 
     res.status(200).send(product)

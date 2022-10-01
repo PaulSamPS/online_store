@@ -7,15 +7,17 @@ const ProductSchema = new Schema(
     rating: { type: Number, defaultValue: 0 },
     price: { type: Number, defaultValue: 0 },
     oldPrice: { type: Number },
-    features: {
-      title: { type: String },
-      name: [
-        {
-          item: { type: String },
-          description: { type: String },
-        },
-      ],
-    },
+    features: [
+      {
+        title: { type: String },
+        item: [
+          {
+            name: { type: String },
+            description: { type: String },
+          },
+        ],
+      },
+    ],
     inStock: { type: Number, defaultValue: 0 },
   },
   { timestamps: true }
