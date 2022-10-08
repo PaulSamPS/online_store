@@ -52,6 +52,7 @@ class ProductController {
     const product = await Product.find()
 
     if (product) {
+      dayProducts = []
       const p = product.map((i) => i)
       for (let i = 0; i < 5; i++) {
         const ind = Math.floor(Math.random() * p.length)
