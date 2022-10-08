@@ -7,6 +7,7 @@ const ProductSchema = new Schema(
     rating: { type: Number, defaultValue: 0 },
     price: { type: Number, defaultValue: 0 },
     oldPrice: { type: Number },
+    inStock: { type: Number, defaultValue: 0 },
     features: [
       {
         title: { type: String },
@@ -18,7 +19,16 @@ const ProductSchema = new Schema(
         ],
       },
     ],
-    inStock: { type: Number, defaultValue: 0 },
+    reviews: [
+      {
+        name: { type: String },
+        city: { type: String },
+        email: { type: String },
+        rating: { type: Number },
+        review: { type: String },
+      },
+      { timestamps: true },
+    ],
   },
   { timestamps: true }
 )
