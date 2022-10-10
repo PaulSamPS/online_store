@@ -3,6 +3,7 @@ const Product = require('../models/product.model')
 const ProductFeatures = require('../models/productFeatures.model')
 
 let dayProducts = []
+let productsYesterday = []
 class ProductController {
   async addProduct(req, res, next) {
     try {
@@ -52,6 +53,7 @@ class ProductController {
     const product = await Product.find()
 
     if (product) {
+      productsYesterday = dayProducts
       dayProducts = []
       const p = product.map((i) => i)
       for (let i = 0; i < 5; i++) {
@@ -68,6 +70,10 @@ class ProductController {
 
   async getDayProducts(req, res) {
     res.json(dayProducts)
+  }
+
+  async getProductsYesterday(req, res) {
+    res.json(productsYesterday)
   }
 }
 
