@@ -8,17 +8,18 @@ class ProductController {
   async addProduct(req, res, next) {
     try {
       let { name, price, oldPrice, rating, features, inStock } = req.body
-      const paths = req.files.map((file) => ({ fileName: file.filename }))
-      const featuresItem = JSON.parse(features)
+      const pathsImg = req.files.img.map((file) => ({ fileName: file.filename }))
+      const paths3d = req.files.rotate3d.map((file) => ({ fileName: file.filename }))
 
-      console.log(JSON.parse(features))
+      const featuresItem = JSON.parse(features)
 
       const product = await Product.create({
         name,
         price,
         oldPrice,
         rating,
-        img: paths,
+        img: pathsImg,
+        rotate3d: paths3d,
         inStock: 10,
         features: featuresItem,
       })

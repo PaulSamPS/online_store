@@ -4,6 +4,7 @@ const ProductSchema = new Schema(
   {
     name: { type: String, unique: true },
     img: [],
+    rotate3d: [],
     rating: { type: Number, defaultValue: 0 },
     price: { type: Number, defaultValue: 0 },
     oldPrice: { type: Number },
