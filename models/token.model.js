@@ -2,7 +2,8 @@ const { Schema, model } = require('mongoose')
 
 const TokenSchema = new Schema(
     {
-        token: {type: String},
+        accessToken: {type: String},
+        refreshToken: { type: String},
         user: { type: Schema.Types.ObjectId, ref: 'User' }
     },
     { timestamps: true }

@@ -4,13 +4,19 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user.model')
 const Basket = require('../models/basket.model')
 const Token = require('../models/token.model')
+const tokenService = require('../services/token.service')
 
-const generateJwt = (id, email , userName, role) => {
-    return jwt.sign(
-        {id, email, userName, role},
-        process.env.SECRET_KEY,
-        {expiresIn: '24h'}
-    )
+const generateJwt = (payload) => {
+    const accessToken = jwt.sign(payload, process.env.SECRET_KEY, {
+        expiresIn: '24h',
+    })
+    const refreshToken = jwt.sign(payload, process.env.SECRET_REFRESH_KEY, {
+        expiresIn: '30d',
+    })
+    return {
+        accessToken,
+        refreshToken,
+    }
 }
 
 class UserController {
@@ -30,9 +36,15 @@ class UserController {
         const hashPassword = await bcrypt.hash(password, 5)
         const user = await User.create({email, role, password: hashPassword, userName})
         await Basket.create({userId: user._id})
-        const token = generateJwt(user._id, user.email, user.userName, user.role)
-        await Token.create({token, user: user._id})
-        return res.json({token})
+        const token = generateJwt({id: user._id, email: user.email, userName: user.userName, role: user.role})
+        await Token.create({accessToken: token.accessToken, refreshToken: token.refreshToken, user: user._id})
+        await res.cookie('refreshToken', token.refreshToken, {
+            maxAge: 30 * 86400 * 1000,
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        })
+        return res.json({token: token.accessToken})
     }
 
     async login(req, res, next) {
@@ -45,13 +57,30 @@ class UserController {
         if (!comparePassword) {
             return next(ApiError.internal('Неверный пароль'))
         }
-        const token = generateJwt(user._id, user.email, user.userName, user.role)
-        return res.json({token})
+        const token = generateJwt({id: user._id, email: user.email, userName: user.userName, role: user.role})
+        await tokenService.saveToken(user._id, token.accessToken, token.refreshToken)
+        await res.cookie('refreshToken', token.refreshToken, {
+            maxAge: 30 * 86400 * 1000,
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        })
+        return res.json({token: token.accessToken})
     }
 
     async check(req, res, next) {
-        const token = generateJwt(req.user.id, req.user.email, req.user.userName, req.user.role)
-        return res.json({token})
+        const validateToken = await tokenService.validateRefreshToken(req.cookies.refreshToken)
+        if (Date.now() >= validateToken.exp * 1000) {
+            return next(ApiError.unauthorized('Токен просрочен'))
+        }
+        const token = generateJwt({id: validateToken._id, email: validateToken.email, userName: validateToken.userName, role: validateToken.role})
+        await res.cookie('refreshToken', token.refreshToken, {
+            maxAge: 30 * 86400 * 1000,
+            httpOnly: true,
+            sameSite: 'none',
+            secure: true,
+        })
+        return res.json({token: token.accessToken})
     }
 
 }
