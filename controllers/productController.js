@@ -4,6 +4,7 @@ const ProductFeatures = require('../models/productFeatures.model')
 
 let dayProducts = []
 let productsYesterday = []
+
 class ProductController {
   async addProduct(req, res, next) {
     try {
@@ -20,8 +21,9 @@ class ProductController {
         rating,
         img: pathsImg,
         rotate3d: paths3d,
-        inStock: 10,
+        inStock: inStock,
         features: featuresItem,
+        reviews: []
       })
 
       res.status(200).send(product)

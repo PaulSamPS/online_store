@@ -23,7 +23,6 @@ const ProductSchema = new Schema(
     reviews: [
       {
         name: { type: String },
-        city: { type: String },
         email: { type: String },
         rating: { type: Number },
         review: { type: String },

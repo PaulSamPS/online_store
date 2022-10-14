@@ -2,12 +2,13 @@ const { Schema, model } = require('mongoose')
 
 const BasketSchema = new Schema(
     {
-        userId: { type: Schema.Types.ObjectId, ref: 'User' },
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
         products: [
             {
                 product: {type: Schema.Types.ObjectId, ref: 'Product'}
             }
-        ]
+        ],
+        totalPrice: {type: Number}
     },
     { timestamps: true }
 )
