@@ -11,15 +11,15 @@ class BasketController {
     if (req.signedCookies.basketId) {
       basketId = req.signedCookies.basketId
       res.cookie('basketId', basketId, { maxAge, signed })
-      const basket = await Basket.findById(basketId).populate('products.product')
+      const basket = await Basket.findById(basketId).populate('products')
       return res.json(basket)
     }
 
     if (!req.signedCookies.basketId) {
-      let created = await new Basket({ products: [], totalPrice: 0 }).save()
+      let created = await Basket.create({ products: [], totalPrice: 0 })
       basketId = created._id
       res.cookie('basketId', basketId, { maxAge, signed })
-      const basket = await Basket.findById(basketId).populate('products.product')
+      const basket = await Basket.findById(basketId).populate('products')
       return res.json(basket)
     }
   }
@@ -27,9 +27,9 @@ class BasketController {
   async addToBasket(req, res) {
     const { productId } = req.body
     if (req.signedCookies.basketId) {
-      const product = await Product.findById(productId)
       const basket = await Basket.findById(req.signedCookies.basketId).populate('products.product')
-      basket.products.push({ name: product.name })
+
+      basket.products.unshift({ product: productId, qty: 1 })
       await basket.save()
       return res.json(basket)
     }
