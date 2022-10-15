@@ -1,4 +1,5 @@
 const Basket = require('../models/basket.model')
+const Product = require('../models/product.model')
 
 let basketId
 
@@ -6,50 +7,31 @@ const maxAge = 30 * 86400 * 1000
 const signed = true
 
 class BasketController {
-  async addToCart(req, res) {
-    const { userId } = req.body
-
+  async create(req, res) {
     if (req.signedCookies.basketId) {
-      const basketCookie = await Basket.findById(req.signedCookies.basketId)
-
-      if (basketCookie && userId) {
-        ;(await basketCookie.user) !== userId ? (basketCookie.user = userId) : basketCookie.user
-        await basketCookie.save()
-        basketId = req.signedCookies.basketId
-        res.cookie('basketId', basketId, { maxAge, signed })
-        return res.json(basketCookie)
-      }
-      if (basketCookie && !userId) {
-        basketId = req.signedCookies.basketId
-        res.cookie('basketId', basketId, { maxAge, signed })
-        return res.json(basketCookie)
-      }
-    }
-
-    if (!req.signedCookies.basketId && !userId) {
-      let created = await new Basket({ user: '', products: [], totalPrice: 0 }).save()
-      basketId = created._id
+      basketId = req.signedCookies.basketId
       res.cookie('basketId', basketId, { maxAge, signed })
-      const basket = await Basket.findById(basketId)
+      const basket = await Basket.findById(basketId).populate('products.product')
       return res.json(basket)
     }
 
-    if (!req.signedCookies.basketId && userId) {
-      const userBasket = await Basket.findOne({ user: userId })
+    if (!req.signedCookies.basketId) {
+      let created = await new Basket({ products: [], totalPrice: 0 }).save()
+      basketId = created._id
+      res.cookie('basketId', basketId, { maxAge, signed })
+      const basket = await Basket.findById(basketId).populate('products.product')
+      return res.json(basket)
+    }
+  }
 
-      if (userBasket) {
-        basketId = userBasket._id
-        res.cookie('basketId', basketId, { maxAge, signed })
-        return res.json(userBasket)
-      }
-
-      if (!userBasket) {
-        let created = await new Basket({ user: userId, products: [], totalPrice: 0 }).save()
-        basketId = created._id
-        res.cookie('basketId', basketId, { maxAge, signed })
-        const basket = await Basket.findById(basketId)
-        return res.json(basket)
-      }
+  async addToBasket(req, res) {
+    const { productId } = req.body
+    if (req.signedCookies.basketId) {
+      const product = await Product.findById(productId)
+      const basket = await Basket.findById(req.signedCookies.basketId).populate('products.product')
+      basket.products.push({ name: product.name })
+      await basket.save()
+      return res.json(basket)
     }
   }
 }
