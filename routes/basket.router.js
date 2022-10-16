@@ -6,5 +6,6 @@ const fileUpload = require('../utils/fileUpload')
 
 router.post('/', basketController.create)
 router.post('/add-to-basket', basketController.addToBasket)
+router.get('/get-basket', basketController.getBasket)
 
 module.exports = router

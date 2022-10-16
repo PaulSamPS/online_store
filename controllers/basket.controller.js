@@ -7,6 +7,13 @@ const maxAge = 30 * 86400 * 1000
 const signed = true
 
 class BasketController {
+  async getBasket(req, res) {
+    if (req.signedCookies.basketId) {
+      const basket = await Basket.findById(req.signedCookies.basketId)
+      return res.json(basket)
+    }
+  }
+
   async create(req, res) {
     if (req.signedCookies.basketId) {
       basketId = req.signedCookies.basketId
@@ -46,6 +53,7 @@ class BasketController {
       basketId = created._id
       res.cookie('basketId', basketId, { maxAge, signed })
       const basket = await Basket.findById(basketId).populate('products')
+
       return res.json(basket)
     }
   }
