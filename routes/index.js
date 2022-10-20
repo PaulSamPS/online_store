@@ -8,14 +8,16 @@ const userRouter = require('./userRouter')
 const dayProductsRouter = require('./dayProductsRouter')
 const productsYesterdayRouter = require('./productsYesterday')
 const basketRouter = require('./basket.router')
+const sliderLargeRouter = require('./slider.router')
 
 router.use('/user', userRouter)
 router.use('/type', typeRouter)
 router.use('/brand', brandRouter)
-router.use('/product', productRouter)
+router.use('/products', productRouter)
 router.use('/menu', menuRouter)
 router.use('/day-products', dayProductsRouter)
 router.use('/products-yesterday', productsYesterdayRouter)
 router.use('/basket', basketRouter)
+router.use('/slider', sliderLargeRouter)
 
 module.exports = router
