@@ -14,15 +14,14 @@ const regexpId = (cookie) => {
 class BasketController {
   async getBasket(req, res) {
     if (req.headers.basket) {
-      const basket = await Basket.findById(regexpId(req.headers.basket)).populate('products.product')
+      basketId = regexpId(req.headers.basket)
+      const basket = await Basket.findById(basketId).populate('products.product')
       return res.json(basket)
     }
   }
 
   async create(req, res) {
-    console.log(req.cookies.basket)
     if (req.headers.basket) {
-      console.log(regexpId(req.headers.basket))
       basketId = regexpId(req.headers.basket)
       res.cookie('basket', basketId, { maxAge, signed })
       const basket = await Basket.findById(basketId).populate('products.product')
