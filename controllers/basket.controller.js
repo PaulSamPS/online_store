@@ -20,7 +20,9 @@ class BasketController {
   }
 
   async create(req, res) {
+    console.log(req.cookies.basket)
     if (req.headers.basket) {
+      console.log(regexpId(req.headers.basket))
       basketId = regexpId(req.headers.basket)
       res.cookie('basket', basketId, { maxAge, signed })
       const basket = await Basket.findById(basketId).populate('products.product')
@@ -61,7 +63,7 @@ class BasketController {
       let created = await Basket.create({ products: [], totalPrice: 0 })
       basketId = created._id
       res.cookie('basket', basketId, { maxAge, signed })
-      const newBasket = await Basket.findById(basketId).populate('products')
+      const newBasket = await Basket.findById(basketId).populate('products.product')
 
       return res.json(newBasket)
     }
