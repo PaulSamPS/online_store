@@ -52,7 +52,7 @@ class BasketController {
         const newBasket = await Basket.findById(basketId).populate('products.product')
         return res.json(newBasket)
       } else {
-        basket.products.unshift({ product: productId, qty: 1 })
+        basket.products.push({ product: productId, qty: 1 })
         basket.totalPrice += productPrice
         await basket.save()
         const newBasket = await Basket.findById(basketId).populate('products.product')
