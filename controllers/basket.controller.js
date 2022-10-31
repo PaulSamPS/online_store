@@ -67,6 +67,40 @@ class BasketController {
       return res.json(newBasket)
     }
   }
+
+  async decrease(req, res) {
+    const { productId } = req.body
+
+    if (req.headers.basket) {
+      basketId = regexpId(req.headers.basket)
+      const basket = await Basket.findById(basketId).populate('products.product')
+      const product = basket.products.find((p) => p.product._id.toString() === productId)
+
+      if (basket.products.map((p) => p.product._id.toString()).includes(productId)) {
+        if (product.qty > 1) {
+          product.qty -= 1
+          basket.totalPrice -= product.product.price
+          await basket.save()
+        }
+        const newBasket = await Basket.findById(basketId).populate('products.product')
+        return res.json(newBasket)
+      }
+    }
+  }
+
+  async increase(req, res) {
+    const { productId, qty } = req.body
+    const basket = await Basket.findById(basketId).populate('products.product')
+    const product = basket.products.find((p) => p.product._id.toString() === productId)
+
+    if (basket.products.map((p) => p.product._id.toString()).includes(productId)) {
+      product.qty = qty
+      basket.totalPrice += product.product.price * qty
+      await basket.save()
+      const newBasket = await Basket.findById(basketId).populate('products.product')
+      return res.json(newBasket)
+    }
+  }
 }
 
 module.exports = new BasketController()

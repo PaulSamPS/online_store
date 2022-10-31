@@ -23,7 +23,7 @@ class ProductController {
         rotate3d: paths3d,
         inStock: inStock,
         features: featuresItem,
-        reviews: []
+        reviews: [],
       })
 
       res.status(200).send(product)
