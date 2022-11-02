@@ -90,20 +90,41 @@ class BasketController {
 
   async increase(req, res) {
     const { productId, qty } = req.body
+    basketId = regexpId(req.headers.basket)
+
     const qtyNumber = Number(qty)
     const basket = await Basket.findById(basketId).populate('products.product')
     const product = basket.products.find((p) => p.product._id.toString() === productId)
 
     if (basket.products.map((p) => p.product._id.toString()).includes(productId)) {
       basket.totalPrice -= product.product.price * product.qty
+
       qtyNumber <= product.product.inStock ? (product.qty = qtyNumber) : (product.qty = product.product.inStock)
+
       qtyNumber <= product.product.inStock
         ? (basket.totalPrice += product.product.price * qtyNumber)
         : (basket.totalPrice += product.product.price * product.product.inStock)
+
       await basket.save()
       const newBasket = await Basket.findById(basketId).populate('products.product')
+
       return res.json(newBasket)
     }
+  }
+
+  async delete(req, res) {
+    const { productId } = req.body
+    basketId = regexpId(req.headers.basket)
+    const basket = await Basket.findById(basketId).populate('products.product')
+    const product = basket.products.find((p) => p.product._id.toString() === productId)
+
+    basket.totalPrice -= product.product.price * product.qty
+    basket.products = basket.products.filter((p) => p.product._id.toString() !== productId)
+
+    await basket.save()
+    const newBasket = await Basket.findById(basketId).populate('products.product')
+
+    return res.json(newBasket)
   }
 }
 
