@@ -90,12 +90,15 @@ class BasketController {
 
   async increase(req, res) {
     const { productId, qty } = req.body
+    const qtyNumber = Number(qty)
     const basket = await Basket.findById(basketId).populate('products.product')
     const product = basket.products.find((p) => p.product._id.toString() === productId)
 
     if (basket.products.map((p) => p.product._id.toString()).includes(productId)) {
-      product.qty = qty
-      basket.totalPrice += product.product.price * qty
+      qtyNumber <= product.product.inStock ? (product.qty = qtyNumber) : (product.qty = product.product.inStock)
+      qtyNumber <= product.product.inStock
+        ? (basket.totalPrice += product.product.price * qtyNumber)
+        : (basket.totalPrice += product.product.price * product.product.inStock)
       await basket.save()
       const newBasket = await Basket.findById(basketId).populate('products.product')
       return res.json(newBasket)
