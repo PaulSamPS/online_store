@@ -95,6 +95,7 @@ class BasketController {
     const product = basket.products.find((p) => p.product._id.toString() === productId)
 
     if (basket.products.map((p) => p.product._id.toString()).includes(productId)) {
+      basket.totalPrice -= product.product.price * product.qty
       qtyNumber <= product.product.inStock ? (product.qty = qtyNumber) : (product.qty = product.product.inStock)
       qtyNumber <= product.product.inStock
         ? (basket.totalPrice += product.product.price * qtyNumber)
