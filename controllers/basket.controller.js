@@ -126,6 +126,18 @@ class BasketController {
 
     return res.json(newBasket)
   }
+
+  async clear(req, res) {
+    basketId = regexpId(req.headers.basket)
+    const basket = await Basket.findById(basketId).populate('products.product')
+    basket.products = []
+    basket.totalPrice = 0
+
+    await basket.save()
+    const newBasket = await Basket.findById(basketId).populate('products.product')
+
+    return res.json(newBasket)
+  }
 }
 
 module.exports = new BasketController()
