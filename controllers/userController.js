@@ -21,7 +21,7 @@ const generateJwt = (payload) => {
 
 class UserController {
   async registration(req, res, next) {
-    const { email, password, userName, role } = req.body
+    const { phone, firstName, lastName, role } = req.body
     if (!email || !password) {
       return next(ApiError.internal('Некорректный email или password'))
     }
