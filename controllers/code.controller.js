@@ -25,24 +25,23 @@ class CodeController {
     const user = await User.findOne({ phone: phone })
 
     if (user) {
-      const code = await axios.get(`https://sms.ru/code/call?phone=${phone}&api_id=${process.env.SMS_API_KEY}`)
-      if (code) {
-        await Code.create({ user, code: code.data.code })
-        return res.json({ message: 'код отправлен' })
+      const userCode = await Code.findOne({ user: user._id })
+      if (userCode) {
+        const code = await axios.get(`https://sms.ru/code/call?phone=${phone}&api_id=${process.env.SMS_API_KEY}`)
+        userCode.code = code.data.code
+        await userCode.save()
+        return res.json(user)
       } else {
-        return next(ApiError.badRequest('Ошибка отправки кода'))
+        const code = await axios.get(`https://sms.ru/code/call?phone=${phone}&api_id=${process.env.SMS_API_KEY}`)
+        await Code.create({ user: user._id, code: code.data.code })
       }
     } else {
       const newUser = await User.create({ phone })
 
       if (newUser) {
         const code = await axios.get(`https://sms.ru/code/call?phone=${phone}&api_id=${process.env.SMS_API_KEY}`)
-        if (code) {
-          await Code.create({ user: newUser._id, code: code.data.code })
-          return res.json({ message: 'код отправлен' })
-        } else {
-          return next(ApiError.badRequest('Ошибка отправки кода'))
-        }
+        await Code.create({ user: newUser._id, code: code.data.code })
+        return res.json({ message: 'код отправлен' })
       }
     }
   }
