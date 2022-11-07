@@ -48,12 +48,17 @@ class CodeController {
 
   async enterCode(req, res, next) {
     const { code, userId } = req.body
-    const user = await User.findById(userId)
-    const findCode = await Code.findOneAndDelete({ user: userId, code: code })
+    const findCode = await Code.findOneAndDelete({ user: userId, code: code }).populate('user')
 
     if (findCode) {
-      const token = generateJwt({ id: user._id, phone: user.phone, firstName: user.firstName, lastName: user.lastName, role: user.role })
-      await tokenService.saveToken(user._id, token.accessToken, token.refreshToken)
+      const token = generateJwt({
+        id: findCode.user._id,
+        phone: findCode.user.phone,
+        firstName: findCode.user.firstName,
+        lastName: findCode.user.lastName,
+        role: findCode.user.role,
+      })
+      await tokenService.saveToken(findCode.user._id, token.accessToken, token.refreshToken)
       await res.cookie('refreshToken', token.refreshToken, {
         maxAge: 30 * 86400 * 1000,
         httpOnly: true,
