@@ -6,6 +6,7 @@ module.exports = function (req, res, next) {
   }
   try {
     const token = req.signedCookies.accessToken
+    console.log(token)
     if (!token) {
       return res.status(401).json({ message: 'Не авторизован' })
     }

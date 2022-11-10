@@ -2,7 +2,7 @@ const ApiError = require('../error/ApiError')
 const jwt = require('jsonwebtoken')
 const tokenService = require('../services/token.service')
 
-const maxAge = 86400
+const maxAge = 86400 * 100
 const signed = true
 
 const generateJwt = (payload) => {
@@ -31,7 +31,7 @@ class UserController {
           return next(ApiError.unauthorized('Токен просрочен'))
         }
         const token = generateJwt({
-          id: validateToken._id,
+          id: validateToken.id,
           phone: validateToken.phone,
           firstName: validateToken.firstName,
           lastName: validateToken.lastName,
@@ -45,7 +45,7 @@ class UserController {
           signed: true,
         })
         res.cookie('accessToken', token.accessToken, {
-          maxAge: 86400,
+          maxAge,
           httpOnly: true,
           sameSite: 'none',
           secure: true,
