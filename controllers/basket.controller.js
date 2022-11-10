@@ -13,26 +13,28 @@ const regexpId = (cookie) => {
 
 class BasketController {
   async getBasket(req, res) {
-    if (req.headers.basket) {
-      basketId = regexpId(req.headers.basket)
+    if (req.signedCookies.basket) {
+      basketId = req.signedCookies.basket
       const basket = await Basket.findById(basketId).populate('products.product')
       return res.json(basket)
     }
   }
 
   async create(req, res) {
-    if (req.headers.basket) {
-      basketId = regexpId(req.headers.basket)
-      res.cookie('basket', basketId, { maxAge, signed })
+    console.log()
+
+    if (req.signedCookies.basket) {
+      basketId = req.signedCookies.basket
       const basket = await Basket.findById(basketId).populate('products.product')
+      res.cookie('basket', basketId, { maxAge, signed })
       return res.json(basket)
     }
 
-    if (!req.headers.basket) {
+    if (!req.signedCookies.basket) {
       let created = await Basket.create({ products: [], totalPrice: 0 })
       basketId = created._id
-      res.cookie('basket', basketId, { maxAge, signed })
       const basket = await Basket.findById(basketId).populate('products.product')
+      res.cookie('basket', basketId, { maxAge, signed })
       return res.json(basket)
     }
   }
@@ -40,8 +42,8 @@ class BasketController {
   async addToBasket(req, res) {
     const { productId, productPrice } = req.body
 
-    if (req.headers.basket) {
-      basketId = regexpId(req.headers.basket)
+    if (req.signedCookies.basket) {
+      basketId = req.signedCookies.basket
       const basket = await Basket.findById(basketId).populate('products.product')
       const product = basket.products.find((p) => p.product._id.toString() === productId)
 
@@ -61,8 +63,8 @@ class BasketController {
     } else {
       let created = await Basket.create({ products: [], totalPrice: 0 })
       basketId = created._id
-      res.cookie('basket', basketId, { maxAge, signed })
       const newBasket = await Basket.findById(basketId).populate('products.product')
+      res.cookie('basket', basketId, { maxAge, signed })
 
       return res.json(newBasket)
     }
@@ -71,8 +73,8 @@ class BasketController {
   async decrease(req, res) {
     const { productId } = req.body
 
-    if (req.headers.basket) {
-      basketId = regexpId(req.headers.basket)
+    if (req.signedCookies.basket) {
+      basketId = req.signedCookies.basket
       const basket = await Basket.findById(basketId).populate('products.product')
       const product = basket.products.find((p) => p.product._id.toString() === productId)
 
@@ -90,7 +92,7 @@ class BasketController {
 
   async increase(req, res) {
     const { productId, qty } = req.body
-    basketId = regexpId(req.headers.basket)
+    basketId = req.signedCookies.basket
 
     const qtyNumber = Number(qty)
     const basket = await Basket.findById(basketId).populate('products.product')
@@ -114,7 +116,7 @@ class BasketController {
 
   async delete(req, res) {
     const { productId } = req.body
-    basketId = regexpId(req.headers.basket)
+    basketId = req.signedCookies.basket
     const basket = await Basket.findById(basketId).populate('products.product')
     const product = basket.products.find((p) => p.product._id.toString() === productId)
 
@@ -128,7 +130,7 @@ class BasketController {
   }
 
   async clear(req, res) {
-    basketId = regexpId(req.headers.basket)
+    basketId = req.signedCookies.basket
     const basket = await Basket.findById(basketId).populate('products.product')
     basket.products = []
     basket.totalPrice = 0
